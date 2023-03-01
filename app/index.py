@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 # Include the user router in the application
-app.include_router(dashboard)
+app.include_router(dashboard, prefix='/api/v1')
 
 # Allow all origins for CORS
 origins = ["*"]
