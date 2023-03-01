@@ -1,0 +1,24 @@
+version: '3'
+services:
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "15400:15400"
+      volumes:
+        - "./app:/code/app"
+        - "./requirements.txt:/code/requirements.txt"
+      command: ["uvicorn", "app.index:app", "--host", "0.0.0.0", "--port", "15400"]
+
+
+    postgres:
+      image: postgres
+      container_name: postgres
+      ports:
+        - '6500:5432'
+      restart: always
+      env_file:
+        - ./.env
+      volumes:
+        - postgres-db:/var/lib/postgresql/data
