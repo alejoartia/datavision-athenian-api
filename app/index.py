@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from app.routes.app import dashboard
 from starlette.middleware.cors import CORSMiddleware
+from fastapi_sqlalchemy import DBSessionMiddleware
+import os
+
 
 app = FastAPI()
+app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 
 # Include the user router in the application
 app.include_router(dashboard, prefix='/app/v1')
