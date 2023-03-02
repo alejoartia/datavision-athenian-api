@@ -5,12 +5,14 @@ import io
 # Create an API router for the user endpoint
 dashboard = APIRouter()
 
+
 @dashboard.get('/')
 async def home() -> dict:
     """
     This is the home page, it just shows a message
     """
     return {"message": "Data-vision"}
+
 
 @dashboard.post('/upload')
 async def upload_file(file: bytes = File(...)) -> dict:
