@@ -1,6 +1,11 @@
 from fastapi import APIRouter, File
 import pandas as pd
+from dotenv import load_dotenv
+from app.models.dashboard import Dashboard
+from fastapi_sqlalchemy import DBSessionMiddleware, db
 import io
+
+load_dotenv(".env")
 
 # Create an API router for the user endpoint
 dashboard = APIRouter()
@@ -16,10 +21,18 @@ async def home() -> dict:
 
 @dashboard.post('/upload')
 async def upload_file(file: bytes = File(...)) -> dict:
-    """
-    This method allows to upload files
-    """
     decoded_file: str = file.decode('utf-8')
     file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
+
+    for row in file_reader.itertuples():
+        dashboard = Dashboard(
+            review_time=row.review_time,
+            team=row.team,
+            date=row.date,
+            merge_time=row.merge_time
+        )
+        db.session.add(dashboard)
+    db.session.commit()
+
     summary_stats: pd.DataFrame = file_reader.describe()
     return summary_stats.to_dict()
