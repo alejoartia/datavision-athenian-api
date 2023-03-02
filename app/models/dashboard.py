@@ -15,3 +15,14 @@ class Dashboard(Base):
     team = Column(String)
     date = Column(Date)
     merge_time = Column(Integer)
+
+    file_id = Column(Integer, ForeignKey("FileCsv.id"))
+
+    file = relationship("FileCsv")
+
+
+class FileCsv(Base):
+    __tablename__ = "FileCsv"
+    id = Column(Integer, primary_key=True)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())

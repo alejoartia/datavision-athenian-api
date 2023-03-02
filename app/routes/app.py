@@ -1,7 +1,7 @@
 from fastapi import APIRouter, File
 import pandas as pd
 from dotenv import load_dotenv
-from app.models.dashboard import Dashboard
+from app.models.dashboard import Dashboard, FileCsv
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 import io
 
@@ -24,12 +24,17 @@ async def upload_file(file: bytes = File(...)) -> dict:
     decoded_file: str = file.decode('utf-8')
     file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
 
+    file_csv = FileCsv()
+    db.session.add(file_csv)
+    db.session.commit()
+
     for row in file_reader.itertuples():
         dashboard = Dashboard(
             review_time=row.review_time,
             team=row.team,
             date=row.date,
-            merge_time=row.merge_time
+            merge_time=row.merge_time,
+            file_id=file_csv.id
         )
         db.session.add(dashboard)
     db.session.commit()

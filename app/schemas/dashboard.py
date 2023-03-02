@@ -10,3 +10,10 @@ class Dashboard(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class FileCsv(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
