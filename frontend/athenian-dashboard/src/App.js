@@ -5,7 +5,7 @@ import LineChart from "./Charts/LineChart";
 import PieChart from "./Charts/PieChart";
 
 function App() {
-  const [userData, setUserData] = useState({
+  const [userDataOneMean, setUserDataOneMean] = useState({
     labels: [],
     datasets: [
       {
@@ -24,7 +24,7 @@ function App() {
     ],
   });
 
-    const [userDataOne, setUserDataOne] = useState({
+    const [userDataOneMedian, setDataOneMedian] = useState({
     labels: [],
     datasets: [
       {
@@ -43,10 +43,86 @@ function App() {
     ],
   });
 
+    const [userDataOneMode, setDataOneMode] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "repos Insights",
+        data: [],
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
 
+    const [userDataTwoMean, setUserDataTwoMean] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "repos Insights",
+        data: [],
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
 
+    const [userDataTwoMedian, setUserDataTwoMedian] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "repos Insights",
+        data: [],
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
+
+    const [userDataTwoMode, setUserDataTwoMode] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "repos Insights",
+        data: [],
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
 
   const [fileListData, setFileListData] = useState([]);
+
+  const [fileListDataAnalysis, setFileListDataAnalysis] = useState([]);
+
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -96,7 +172,7 @@ const handleAnalysisFile = (id) => {
     fetch("http://0.0.0.0:8000/app/v1/review-stats")
       .then((response) => response.json())
       .then((data) => {
-        setUserData({
+        setUserDataOneMean({
           labels: data.map((data) => data.name),
           datasets: [
             {
@@ -119,12 +195,62 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
+    fetch("http://0.0.0.0:8000/app/v1/review-stats")
+      .then((response) => response.json())
+      .then((data) => {
+        setDataOneMedian({
+          labels: data.map((data) => data.name),
+          datasets: [
+            {
+              label: "repos Insights",
+              data: data.map((data) => data.median_review_time),
+              backgroundColor: [
+                "rgba(75,192,192,1)",
+                "#ecf0f1",
+                "#50AF95",
+                "#f3ba2f",
+                "#2a71d0",
+              ],
+              borderColor: "black",
+              borderWidth: 2,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data: ", error);
+      });
 
+    fetch("http://0.0.0.0:8000/app/v1/review-stats")
+      .then((response) => response.json())
+      .then((data) => {
+        setDataOneMode({
+          labels: data.map((data) => data.name),
+          datasets: [
+            {
+              label: "repos Insights",
+              data: data.map((data) => data.mode_review_time),
+              backgroundColor: [
+                "rgba(75,192,192,1)",
+                "#ecf0f1",
+                "#50AF95",
+                "#f3ba2f",
+                "#2a71d0",
+              ],
+              borderColor: "black",
+              borderWidth: 2,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data: ", error);
+      });
 
         fetch("http://0.0.0.0:8000/app/v1/review-stats")
       .then((response) => response.json())
       .then((data) => {
-        setUserDataOne({
+        setUserDataTwoMean({
           labels: data.map((data) => data.name),
           datasets: [
             {
@@ -147,8 +273,57 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
+        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+      .then((response) => response.json())
+      .then((data) => {
+        setUserDataTwoMedian({
+          labels: data.map((data) => data.name),
+          datasets: [
+            {
+              label: "repos Insights",
+              data: data.map((data) => data.median_merge_time),
+              backgroundColor: [
+                "rgb(0,175,63)",
+                "#ecf0f1",
+                "#9eef7b",
+                "#f3ba2f",
+                "#f33f2f",
+              ],
+              borderColor: "black",
+              borderWidth: 2,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data: ", error);
+      });
 
-
+        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+      .then((response) => response.json())
+      .then((data) => {
+        setUserDataTwoMode({
+          labels: data.map((data) => data.name),
+          datasets: [
+            {
+              label: "repos Insights",
+              data: data.map((data) => data.mode_merge_time),
+              backgroundColor: [
+                "rgb(0,175,63)",
+                "#ecf0f1",
+                "#9eef7b",
+                "#f3ba2f",
+                "#f33f2f",
+              ],
+              borderColor: "black",
+              borderWidth: 2,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data: ", error);
+      });
 
     fetch("http://0.0.0.0:8000/app/v1/filelist")
       .then((response) => response.json())
@@ -158,7 +333,18 @@ const handleAnalysisFile = (id) => {
       .catch((error) => {
         console.error("Error fetching file list data: ", error);
       });
+
+    fetch("http://0.0.0.0:8000/app/v1/saved_analysis_list")
+      .then((response) => response.json())
+      .then((data) => {
+        setFileListDataAnalysis(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching file list data: ", error);
+      });
   }, []);
+
+
 
   // IF YOU SEE THIS COMMENT: I HAVE GOOD EYESIGHT
 
@@ -205,8 +391,12 @@ return (
         </button>
       </form>
         <div style={{ width: 700 }}>
+
         <table style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }}>
+
+
           <thead>
+          <h3 style={{margin: "10px" }}> CSV uploaded </h3>
             <tr>
               <th style={{ border: "1px solid black", padding: "0.5rem" }}>ID</th>
               <th style={{ border: "1px solid black", padding: "0.5rem" }}>Date</th>
@@ -243,13 +433,13 @@ return (
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
       <div style={{ width: 400 }}>
-        <BarChart chartData={userData} />
+        <BarChart chartData={userDataOneMean} />
       </div>
       <div style={{ width: 400 }}>
-        <LineChart chartData={userData} />
+        <LineChart chartData={userDataOneMean} />
       </div>
       <div style={{ width: 250 }}>
-        <PieChart chartData={userData} />
+        <PieChart chartData={userDataOneMean} />
       </div>
       </div>
               <h3>MEDIAN </h3>
@@ -257,13 +447,13 @@ return (
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
       <div style={{ width: 400 }}>
-        <BarChart chartData={userData} />
+        <BarChart chartData={userDataOneMedian} />
       </div>
       <div style={{ width: 400 }}>
-        <LineChart chartData={userData} />
+        <LineChart chartData={userDataOneMedian} />
       </div>
       <div style={{ width: 250 }}>
-        <PieChart chartData={userData} />
+        <PieChart chartData={userDataOneMedian} />
       </div>
       </div>
 
@@ -272,27 +462,23 @@ return (
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
       <div style={{ width: 400 }}>
-        <BarChart chartData={userData} />
-      </div>
-      <div style={{ width: 400 }}>
-        <LineChart chartData={userData} />
-      </div>
-      <div style={{ width: 250 }}>
-        <PieChart chartData={userData} />
+        <LineChart chartData={userDataOneMode} />
       </div>
       </div>
+
+
     <h2 style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }} >Data-Vision Merge Time</h2>
     <h3>MEAN </h3>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
       <div style={{ width: 400 }}>
-        <BarChart chartData={userDataOne} />
+        <BarChart chartData={userDataTwoMean} />
       </div>
       <div style={{ width: 400 }}>
-        <LineChart chartData={userDataOne} />
+        <LineChart chartData={userDataTwoMean} />
       </div>
       <div style={{ width: 250 }}>
-        <PieChart chartData={userDataOne} />
+        <PieChart chartData={userDataTwoMean} />
       </div>
       </div>
 
@@ -300,28 +486,24 @@ return (
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
       <div style={{ width: 400 }}>
-        <BarChart chartData={userDataOne} />
+        <BarChart chartData={userDataTwoMedian} />
       </div>
       <div style={{ width: 400 }}>
-        <LineChart chartData={userDataOne} />
+        <LineChart chartData={userDataTwoMedian} />
       </div>
       <div style={{ width: 250 }}>
-        <PieChart chartData={userDataOne} />
+        <PieChart chartData={userDataTwoMedian} />
       </div>
       </div>
 
           <h3>MODE </h3>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 
+
       <div style={{ width: 400 }}>
-        <BarChart chartData={userDataOne} />
+        <LineChart chartData={userDataTwoMode} />
       </div>
-      <div style={{ width: 400 }}>
-        <LineChart chartData={userDataOne} />
-      </div>
-      <div style={{ width: 250 }}>
-        <PieChart chartData={userDataOne} />
-      </div>
+
       </div>
 
 
