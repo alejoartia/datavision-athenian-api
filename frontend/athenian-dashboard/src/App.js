@@ -78,20 +78,19 @@ function App() {
       });
   };
 
-  const handleAnalysisFile = (id) => {
-    fetch("http://0.0.0.0:8000/app/v1/analysis_file", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+const handleAnalysisFile = (id) => {
+  fetch(`http://0.0.0.0:8000/app/v1/analysis_file/${id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Analysis file successful: ", data);
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Analysis file successful: ", data);
-      })
-      .catch((error) => {
-        console.error("Error analyzing file: ", error);
-      });
-  };
+    .catch((error) => {
+      console.error("Error analyzing file: ", error);
+    });
+};
 
   useEffect(() => {
     fetch("http://0.0.0.0:8000/app/v1/review-stats")

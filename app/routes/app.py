@@ -45,13 +45,13 @@ async def upload_file(file: bytes = File(...)) -> dict:
     return summary_stats.to_dict()
 
 
-@dashboard.post('/analysis_file')
-async def get_data(team: str, date: str):
+@dashboard.post('/analysis_file/{id}')
+async def get_data(id: int):
     """
-    Endpoint to retrieve data filtered by team and date
+    Endpoint to retrieve data filtered by team, date, and id
     """
-    # Get the data from the database
-    dashboard_data = db.session.query(Dashboard).join(FileCsv)
+    # Get the data from the database, filtered by team, date, and id
+    dashboard_data = db.session.query(Dashboard).join(FileCsv).filter(FileCsv.id == id)
     # Convert the data to a pandas DataFrame
     data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
     df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
