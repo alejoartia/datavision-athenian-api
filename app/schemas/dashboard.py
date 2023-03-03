@@ -17,3 +17,10 @@ class FileCsv(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class QueriesAnalyzed(BaseModel):
+    query_number: int
+
+    class Config:
+        orm_mode = True

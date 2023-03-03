@@ -2,8 +2,9 @@ import json
 from fastapi import APIRouter, File
 import pandas as pd
 from dotenv import load_dotenv
-from app.models.dashboard import Dashboard, FileCsv
+from app.models.dashboard import Dashboard, FileCsv, QueriesAnalyzed
 from fastapi_sqlalchemy import DBSessionMiddleware, db
+from sqlalchemy import desc, func
 
 import io
 
@@ -50,22 +51,28 @@ async def get_data(id: int):
     """
     Endpoint to retrieve data filtered by team, date, and id
     """
-    # Get the data from the database, filtered by team, date, and id
-    dashboard_data = db.session.query(Dashboard).join(FileCsv).filter(FileCsv.id == id)
-    # Convert the data to a pandas DataFrame
-    data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
-    df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
-    print(df)
-    return f'done!'
+    queries_analyzed = QueriesAnalyzed(
+        query_number=id,
+    )
+    db.session.add(queries_analyzed)
+    db.session.commit()
+
+    print(id)
+    return f'the query has been saved'
 
 
-@dashboard.get('/review-stats')
+@dashboard.get('/review-stats/')
 async def get_user_stats() -> list:
     """
     Endpoint to retrieve data filtered by team and date
+
     """
+    last_query_number = db.session.query(func.max(QueriesAnalyzed.query_number)).scalar()
+    print(last_query_number)
     # Get the data from the database
-    dashboard_data = db.session.query(Dashboard).join(FileCsv)
+    dashboard_data = db.session.query(Dashboard).join(FileCsv).filter(
+        QueriesAnalyzed.query_number == last_query_number
+    )
     # Convert the data to a pandas DataFrame
     data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
     df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
@@ -107,6 +114,7 @@ async def get_user_stats() -> list:
     df = pd.DataFrame(data, columns=['_id', 'time_created'])
     data_dict = df.to_dict('records')
 
-    user_stats = [{"id": d['_id'], "date": d['time_created'].year} for d in data_dict]
+    user_stats = [{"id": d['_id'], "date": d['time_created'].strftime('%Y-%m-%d %H:%M')} for d in data_dict]
 
     return user_stats
+

@@ -26,3 +26,11 @@ class FileCsv(Base):
     id = Column(Integer, primary_key=True)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class QueriesAnalyzed(Base):
+    __tablename__ = "QueriesAnalyzed"
+    id = Column(Integer, primary_key=True)
+    query_number = Column(Integer)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
