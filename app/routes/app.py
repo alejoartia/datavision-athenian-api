@@ -75,6 +75,11 @@ async def get_user_stats() -> list:
     mean_review_time = grouped_data["review_time"].mean()
     median_review_time = grouped_data["review_time"].median()
     mode_review_time = grouped_data["review_time"].agg(pd.Series.mode)
+
+    # Get the mean, median, and mode of the 'merge_time' column for each team
+    mean_merge_time = grouped_data["merge_time"].mean()
+    median_merge_time = grouped_data["merge_time"].median()
+    mode_merge_time = grouped_data["merge_time"].agg(pd.Series.mode)
     # Create a list with the statistics for each team
     review_stats = []
     for team in grouped_data.groups:
@@ -83,6 +88,9 @@ async def get_user_stats() -> list:
             "mean_review_time": mean_review_time[team],
             "median_review_time": median_review_time[team],
             "mode_review_time": mode_review_time[team].tolist(),
+            "mean_merge_time": mean_merge_time[team],
+            "median_merge_time": median_merge_time[team],
+            "mode_merge_time": mode_merge_time[team].tolist(),
         }
         review_stats.append(team_dict)
 
