@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import List
 
 
 class Dashboard(BaseModel):
@@ -21,6 +22,21 @@ class FileCsv(BaseModel):
 
 class QueriesAnalyzed(BaseModel):
     query_number: int
+
+    class Config:
+        orm_mode = True
+
+
+class TeamStats(BaseModel):
+    id: int
+    name: str
+    mean_review_time: float
+    median_review_time: float
+    mode_review_time: List[int]
+    mean_merge_time: float
+    median_merge_time: float
+    mode_merge_time: List[int]
+    date_created: date
 
     class Config:
         orm_mode = True
