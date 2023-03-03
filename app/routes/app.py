@@ -62,7 +62,7 @@ async def get_data(id: int):
     return f'the query has been saved'
 
 
-@dashboard.get('/review-stats')
+@dashboard.get('/review_stats')
 async def review_stats() -> list:
     """
     Endpoint to retrieve data filtered by team and date
@@ -105,7 +105,7 @@ async def review_stats() -> list:
     return review_stats
 
 
-@dashboard.get('/filelist')
+@dashboard.get('/file_list')
 async def get_user_stats() -> list:
     """
     Endpoint to retrieve user stats
@@ -162,13 +162,11 @@ async def save_stats() -> list:
 
 @dashboard.get('/saved_analysis_list')
 async def saved_analysis_list() -> list[dict[str, Any]]:
-    analysis_data = db.session.query(StatsId)
-    data = [(d.id, d.time_created) for d in analysis_data]
-    df = pd.DataFrame(data, columns=['_id', 'time_created'])
-    data_dict = df.to_dict('records')
-
-    stats = [{"id": d['_id'], "date": d['time_created'].strftime('%Y-%m-%d %H:%M')} for d in data_dict]
-
+    analysis_data = db.session.query(StatsId).filter(StatsId.query_number.isnot(None))
+    stats = [
+        {"query_number": row.query_number,
+         "date": str(row.time_created.strftime('%Y-%m-%d %H:%M'))} for row in analysis_data
+            ]
     return stats
 
 
