@@ -153,6 +153,21 @@ function App() {
         console.error("Error uploading file: ", error);
       });
   };
+  const handleSaveAnalysis = (event) => {
+    event.preventDefault();
+
+  fetch("http://0.0.0.0:8000/app/v1/save_analysis?file=" + selectedFile)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("File download successful: ", data);
+    })
+    .catch((error) => {
+      console.error("Error downloading file: ", error);
+    });
+  };
+
+
+
 
 const handleAnalysisFile = (id) => {
   fetch(`http://0.0.0.0:8000/app/v1/analysis_file/${id}`, {
@@ -169,7 +184,7 @@ const handleAnalysisFile = (id) => {
 };
 
   useEffect(() => {
-    fetch("http://0.0.0.0:8000/app/v1/review-stats")
+    fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setUserDataOneMean({
@@ -195,7 +210,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-    fetch("http://0.0.0.0:8000/app/v1/review-stats")
+    fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setDataOneMedian({
@@ -221,7 +236,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-    fetch("http://0.0.0.0:8000/app/v1/review-stats")
+    fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setDataOneMode({
@@ -247,7 +262,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+        fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setUserDataTwoMean({
@@ -273,7 +288,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+        fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setUserDataTwoMedian({
@@ -299,7 +314,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+        fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
       .then((data) => {
         setUserDataTwoMode({
@@ -325,7 +340,7 @@ const handleAnalysisFile = (id) => {
         console.error("Error fetching user data: ", error);
       });
 
-    fetch("http://0.0.0.0:8000/app/v1/filelist")
+    fetch("http://0.0.0.0:8000/app/v1/file_list")
       .then((response) => response.json())
       .then((data) => {
         setFileListData(data);
@@ -390,9 +405,12 @@ return (
           Upload
         </button>
       </form>
+
         <div style={{ width: 700 }}>
 
-        <table style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }}>
+<div style={{ display: "flex", flexDirection: "row" }}>
+
+          <table style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }}>
 
 
           <thead>
@@ -427,6 +445,65 @@ return (
             ))}
           </tbody>
         </table>
+
+        <table style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }}>
+
+
+          <thead>
+          <h3 style={{margin: "10px" }}> Analysis Saved </h3>
+            <tr>
+              <th style={{ border: "1px solid black", padding: "0.5rem" }}>Number</th>
+              <th style={{ border: "1px solid black", padding: "0.5rem" }}>Date</th>
+              <th style={{ border: "1px solid black", padding: "0.5rem" }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {fileListDataAnalysis.map((file) => (
+              <tr key={file.id}>
+                <td style={{ border: "1px solid black", padding: "0.5rem" }}>{file.query_number}</td>
+                <td style={{ border: "1px solid black", padding: "0.5rem" }}>{file.date}</td>
+                <td style={{ border: "1px solid black", padding: "0.5rem" }}>
+                  <button
+                    onClick={() => handleAnalysisFile(file.id)}
+                    style={{
+                      backgroundColor: "#f3ba2f",
+                      color: "white",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "5px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Analyze
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+
+
+</div>
+        <form
+        onSubmit={handleSaveAnalysis}
+        style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "10px" }}
+      >
+        <button
+          type="submit"
+          style={{
+            backgroundColor: "#2c4c9b",
+            color: "white",
+            padding: "1rem 1rem",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          CLICK HERE TO SAVE THE CURRENT ANALYSIS
+        </button>
+      </form>
+
       </div>
     <h2 style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }} >Data-Vision Review Time</h2>
         <h3>MEAN</h3>
