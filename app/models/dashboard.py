@@ -40,11 +40,23 @@ class QueriesAnalyzed(Base):
 class TeamStats(Base):
     __tablename__ = "team_stats"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     mean_review_time = Column(Float)
     median_review_time = Column(Float)
-    mode_review_time = Column(ARRAY(Integer))
+    mode_review_time = Column(Float)
     mean_merge_time = Column(Float)
     median_merge_time = Column(Float)
-    mode_merge_time = Column(ARRAY(Integer))
+    mode_merge_time = Column(Float)
     date_created = Column(DateTime(timezone=True), onupdate=func.now())
+
+    stats_id = Column(Integer, ForeignKey("StatsId.id"))
+
+    stat = relationship("StatsId")
+
+
+class StatsId(Base):
+    __tablename__ = "StatsId"
+    id = Column(Integer, primary_key=True)
+    query_number = Column(Integer)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())

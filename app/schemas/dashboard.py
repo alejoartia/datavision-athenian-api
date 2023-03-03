@@ -32,11 +32,18 @@ class TeamStats(BaseModel):
     name: str
     mean_review_time: float
     median_review_time: float
-    mode_review_time: List[int]
+    mode_review_time: float
     mean_merge_time: float
     median_merge_time: float
-    mode_merge_time: List[int]
+    mode_merge_time: float
     date_created: date
+
+    class Config:
+        orm_mode = True
+
+
+class StatsId(BaseModel):
+    query_number: int
 
     class Config:
         orm_mode = True
