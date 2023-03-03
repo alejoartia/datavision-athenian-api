@@ -1,8 +1,11 @@
+import json
+
 from fastapi import APIRouter, File
 import pandas as pd
 from dotenv import load_dotenv
 from app.models.dashboard import Dashboard, FileCsv
 from fastapi_sqlalchemy import DBSessionMiddleware, db
+
 import io
 
 load_dotenv(".env")
@@ -49,19 +52,48 @@ async def get_data(team: str, date: str):
     Endpoint to retrieve data filtered by team and date
     """
     # Get the data from the database
-    dashboard_data = db.session.query(Dashboard). \
-        join(FileCsv). \
-        filter(Dashboard.team == team, Dashboard.date == date). \
-        all()
-
+    dashboard_data = db.session.query(Dashboard).join(FileCsv)
     # Convert the data to a pandas DataFrame
     data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
     df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
-
+    print(df)
     return f'done!'
 
 
-@dashboard.get('/user-stats')
+@dashboard.get('/review-stats')
+async def get_user_stats() -> list:
+    """
+    Endpoint to retrieve data filtered by team and date
+    """
+    """
+    Endpoint to retrieve data
+    """
+    # Get the data from the database
+    dashboard_data = db.session.query(Dashboard).join(FileCsv)
+    # Convert the data to a pandas DataFrame
+    data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
+    df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
+    # Group the data by team
+    grouped_data = df.groupby("team")
+    # Get the mean, median, and mode of the 'review_time' column for each team
+    mean_review_time = grouped_data["review_time"].mean()
+    median_review_time = grouped_data["review_time"].median()
+    mode_review_time = grouped_data["review_time"].agg(pd.Series.mode)
+    # Create a list with the statistics for each team
+    review_stats = []
+    for team in grouped_data.groups:
+        team_dict = {
+            "name": team,
+            "mean_review_time": mean_review_time[team],
+            "median_review_time": median_review_time[team],
+            "mode_review_time": mode_review_time[team].tolist(),
+        }
+        review_stats.append(team_dict)
+
+    return review_stats
+
+
+@dashboard.get('/filelist')
 async def get_user_stats() -> list:
     """
     Endpoint to retrieve user stats
@@ -69,34 +101,13 @@ async def get_user_stats() -> list:
     user_stats = [
         {
             "id": 1,
-            "year": 2016,
-            "userGain": 80000,
-            "userLost": 823,
+            "date": 2016,
         },
         {
             "id": 2,
-            "year": 2017,
-            "userGain": 45677,
-            "userLost": 345,
+            "date": 2017,
         },
-        {
-            "id": 3,
-            "year": 2018,
-            "userGain": 78888,
-            "userLost": 555,
-        },
-        {
-            "id": 4,
-            "year": 2019,
-            "userGain": 90000,
-            "userLost": 4555,
-        },
-        {
-            "id": 5,
-            "year": 2020,
-            "userGain": 4300,
-            "userLost": 234,
-        },
+
     ]
 
     return user_stats
