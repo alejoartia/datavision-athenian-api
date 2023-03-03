@@ -37,8 +37,3 @@ services:
     restart: always
 
 
-  pytest:
-    build: .
-    volumes:
-      - .:/app
-    command: pytest
