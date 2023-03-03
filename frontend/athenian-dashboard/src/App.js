@@ -9,7 +9,7 @@ function App() {
     labels: [],
     datasets: [
       {
-        label: "Users Gained",
+        label: "repos Insights",
         data: [],
         backgroundColor: [
           "rgba(75,192,192,1)",
@@ -23,6 +23,28 @@ function App() {
       },
     ],
   });
+
+    const [userDataOne, setUserDataOne] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "repos Insights",
+        data: [],
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
+
+
+
 
   const [fileListData, setFileListData] = useState([]);
 
@@ -79,7 +101,7 @@ function App() {
           labels: data.map((data) => data.name),
           datasets: [
             {
-              label: "Users Gained",
+              label: "repos Insights",
               data: data.map((data) => data.mean_review_time),
               backgroundColor: [
                 "rgba(75,192,192,1)",
@@ -97,6 +119,37 @@ function App() {
       .catch((error) => {
         console.error("Error fetching user data: ", error);
       });
+
+
+
+        fetch("http://0.0.0.0:8000/app/v1/review-stats")
+      .then((response) => response.json())
+      .then((data) => {
+        setUserDataOne({
+          labels: data.map((data) => data.name),
+          datasets: [
+            {
+              label: "repos Insights",
+              data: data.map((data) => data.mean_merge_time),
+              backgroundColor: [
+                "rgb(0,175,63)",
+                "#ecf0f1",
+                "#9eef7b",
+                "#f3ba2f",
+                "#f33f2f",
+              ],
+              borderColor: "black",
+              borderWidth: 2,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data: ", error);
+      });
+
+
+
 
     fetch("http://0.0.0.0:8000/app/v1/filelist")
       .then((response) => response.json())
@@ -186,15 +239,92 @@ return (
           </tbody>
         </table>
       </div>
-      <div style={{ width: 350 }}>
+    <h2 style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }} >Data-Vision Review Time</h2>
+        <h3>MEAN</h3>
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
         <BarChart chartData={userData} />
       </div>
-      <div style={{ width: 350 }}>
+      <div style={{ width: 400 }}>
         <LineChart chartData={userData} />
       </div>
-      <div style={{ width: 350 }}>
+      <div style={{ width: 250 }}>
         <PieChart chartData={userData} />
       </div>
+      </div>
+              <h3>MEDIAN </h3>
+
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
+        <BarChart chartData={userData} />
+      </div>
+      <div style={{ width: 400 }}>
+        <LineChart chartData={userData} />
+      </div>
+      <div style={{ width: 250 }}>
+        <PieChart chartData={userData} />
+      </div>
+      </div>
+
+      <h3>MODE </h3>
+
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
+        <BarChart chartData={userData} />
+      </div>
+      <div style={{ width: 400 }}>
+        <LineChart chartData={userData} />
+      </div>
+      <div style={{ width: 250 }}>
+        <PieChart chartData={userData} />
+      </div>
+      </div>
+    <h2 style={{ border: "1px solid black", borderCollapse: "collapse", margin: "20px" }} >Data-Vision Merge Time</h2>
+    <h3>MEAN </h3>
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
+        <BarChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 400 }}>
+        <LineChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 250 }}>
+        <PieChart chartData={userDataOne} />
+      </div>
+      </div>
+
+          <h3>MEDIAN </h3>
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
+        <BarChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 400 }}>
+        <LineChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 250 }}>
+        <PieChart chartData={userDataOne} />
+      </div>
+      </div>
+
+          <h3>MODE </h3>
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+
+      <div style={{ width: 400 }}>
+        <BarChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 400 }}>
+        <LineChart chartData={userDataOne} />
+      </div>
+      <div style={{ width: 250 }}>
+        <PieChart chartData={userDataOne} />
+      </div>
+      </div>
+
 
     </div>
   );
