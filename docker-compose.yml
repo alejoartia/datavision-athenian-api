@@ -35,3 +35,10 @@ services:
     depends_on:
       - db
     restart: always
+
+
+  pytest:
+    build: .
+    volumes:
+      - .:/app
+    command: pytest
