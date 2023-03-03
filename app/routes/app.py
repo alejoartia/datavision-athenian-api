@@ -1,11 +1,12 @@
 import json
+from typing import List, Dict, Any
+
 from fastapi import APIRouter, File
 import pandas as pd
 from dotenv import load_dotenv
-from app.models.dashboard import Dashboard, FileCsv, QueriesAnalyzed
+from app.models.dashboard import Dashboard, FileCsv, QueriesAnalyzed, TeamStats, StatsId
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from sqlalchemy import desc, func
-
 import io
 
 load_dotenv(".env")
@@ -61,8 +62,8 @@ async def get_data(id: int):
     return f'the query has been saved'
 
 
-@dashboard.get('/review-stats/')
-async def get_user_stats() -> list:
+@dashboard.get('/review-stats')
+async def review_stats() -> list:
     """
     Endpoint to retrieve data filtered by team and date
 
@@ -81,12 +82,12 @@ async def get_user_stats() -> list:
     # Get the mean, median, and mode of the 'review_time' column for each team
     mean_review_time = grouped_data["review_time"].mean()
     median_review_time = grouped_data["review_time"].median()
-    mode_review_time = grouped_data["review_time"].agg(pd.Series.mode)
+    mode_review_time = grouped_data["review_time"].agg(pd.Series.mode).astype(float)
 
     # Get the mean, median, and mode of the 'merge_time' column for each team
     mean_merge_time = grouped_data["merge_time"].mean()
     median_merge_time = grouped_data["merge_time"].median()
-    mode_merge_time = grouped_data["merge_time"].agg(pd.Series.mode)
+    mode_merge_time = grouped_data["merge_time"].agg(pd.Series.mode).astype(float)
     # Create a list with the statistics for each team
     review_stats = []
     for team in grouped_data.groups:
@@ -118,3 +119,95 @@ async def get_user_stats() -> list:
 
     return user_stats
 
+
+@dashboard.get('/save_analysis')
+async def save_stats() -> list:
+    """
+    Endpoint to save review_stats into a JSON file
+    """
+    review_stats_data = await review_stats()  # Call review_stats() endpoint to get the data
+    df = pd.DataFrame(review_stats_data)
+
+    max_query_number = db.session.query(func.max(StatsId.query_number)).scalar()
+    if max_query_number is None:
+        max_query_number = 1
+    else:
+        max_query_number += 1
+
+    print(max_query_number)
+
+    stats_id = StatsId(query_number=max_query_number)
+    db.session.add(stats_id)
+    db.session.commit()
+
+    print(df)
+    for row in df.itertuples():
+        teamstats = TeamStats(
+            name=row.name,
+            mean_review_time=row.mean_review_time,
+            median_review_time=row.median_review_time,
+            mode_review_time=row.mode_review_time,
+            mean_merge_time=row.mean_merge_time,
+            median_merge_time=row.median_merge_time,
+            mode_merge_time=row.mode_merge_time,
+            stats_id=stats_id.query_number
+        )
+        db.session.add(teamstats)
+    db.session.commit()
+
+    print(review_stats_data)
+
+    return review_stats_data  # Return the data as response
+
+
+@dashboard.get('/saved_analysis_list')
+async def saved_analysis_list() -> list[dict[str, Any]]:
+    analysis_data = db.session.query(StatsId)
+    data = [(d.id, d.time_created) for d in analysis_data]
+    df = pd.DataFrame(data, columns=['_id', 'time_created'])
+    data_dict = df.to_dict('records')
+
+    stats = [{"id": d['_id'], "date": d['time_created'].strftime('%Y-%m-%d %H:%M')} for d in data_dict]
+
+    return stats
+
+
+@dashboard.get('/analysis/{id}')
+async def saved_analysis_object() -> list[dict[str, Any]]:
+    """
+    Endpoint to save review_stats into a JSON file
+    """
+
+    dashboard_data = db.session.query(TeamStats)
+
+    data = [(d.id,
+             d.name,
+             d.mean_review_time,
+             d.median_review_time,
+             d.mode_review_time,
+             d.mean_merge_time,
+             d.median_merge_time,
+             d.mode_merge_time) for d in dashboard_data]
+
+    df = pd.DataFrame(data, columns=['id',
+                                     'name',
+                                     'mean_review_time',
+                                     'median_review_time',
+                                     'mode_review_time',
+                                     'mean_merge_time',
+                                     'median_merge_time',
+                                     'mode_merge_time'])
+
+    df_dict = df.to_dict(orient='records')
+
+    # Create a new list of dictionaries with the desired keys
+    stats_list = [{"id": d['id'],
+                   "name": d['name'],
+                   "mean_review_time": d['mean_review_time'],
+                   "median_review_time": d['median_review_time'],
+                   "mode_review_time": d['mode_review_time'],
+                   "mean_merge_time": d['mean_merge_time'],
+                   "median_merge_time": d['median_merge_time'],
+                   "mode_merge_time": d['mode_merge_time']} for d in df_dict]
+
+    return stats_list
