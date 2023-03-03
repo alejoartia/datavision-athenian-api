@@ -1,5 +1,4 @@
 import json
-
 from fastapi import APIRouter, File
 import pandas as pd
 from dotenv import load_dotenv
@@ -46,7 +45,7 @@ async def upload_file(file: bytes = File(...)) -> dict:
     return summary_stats.to_dict()
 
 
-@dashboard.get('/analysis')
+@dashboard.post('/analysis_file')
 async def get_data(team: str, date: str):
     """
     Endpoint to retrieve data filtered by team and date
@@ -64,9 +63,6 @@ async def get_data(team: str, date: str):
 async def get_user_stats() -> list:
     """
     Endpoint to retrieve data filtered by team and date
-    """
-    """
-    Endpoint to retrieve data
     """
     # Get the data from the database
     dashboard_data = db.session.query(Dashboard).join(FileCsv)
@@ -98,16 +94,11 @@ async def get_user_stats() -> list:
     """
     Endpoint to retrieve user stats
     """
-    user_stats = [
-        {
-            "id": 1,
-            "date": 2016,
-        },
-        {
-            "id": 2,
-            "date": 2017,
-        },
+    dashboard_data = db.session.query(FileCsv)
+    data = [(d.id, d.time_created) for d in dashboard_data]
+    df = pd.DataFrame(data, columns=['_id', 'time_created'])
+    data_dict = df.to_dict('records')
 
-    ]
+    user_stats = [{"id": d['_id'], "date": d['time_created'].year} for d in data_dict]
 
     return user_stats
