@@ -10,6 +10,9 @@ Base = declarative_base()
 
 
 class Dashboard(Base):
+    """
+    Represents a dashboard object in the database.
+    """
     __tablename__ = "Dashboard"
     id = Column(Integer, primary_key=True, index=True)
     review_time = Column(Integer)
@@ -23,6 +26,9 @@ class Dashboard(Base):
 
 
 class FileCsv(Base):
+    """
+    Represents a CSV file object in the database.
+    """
     __tablename__ = "FileCsv"
     id = Column(Integer, primary_key=True)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
@@ -30,6 +36,9 @@ class FileCsv(Base):
 
 
 class QueriesAnalyzed(Base):
+    """
+    Represents a queries analyzed object in the database.
+    """
     __tablename__ = "QueriesAnalyzed"
     id = Column(Integer, primary_key=True)
     query_number = Column(Integer)
@@ -38,6 +47,9 @@ class QueriesAnalyzed(Base):
 
 
 class TeamStats(Base):
+    """
+    Represents a team stats object in the database.
+    """
     __tablename__ = "team_stats"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
@@ -55,6 +67,9 @@ class TeamStats(Base):
 
 
 class StatsId(Base):
+    """
+    Represents a stats ID object in the database.
+    """
     __tablename__ = "StatsId"
     id = Column(Integer, primary_key=True)
     query_number = Column(Integer)
