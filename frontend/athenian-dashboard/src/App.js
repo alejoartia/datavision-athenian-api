@@ -183,6 +183,25 @@ const handleAnalysisFile = (id) => {
     });
 };
 
+
+  const [jsonResponse, setJsonResponse] = useState('');
+
+  const handleAnalysisDone = (id) => {
+    fetch(`http://0.0.0.0:8000/app/v1/analysis/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Analysis file successful: ", data);
+        const formattedJson = JSON.stringify(data, null, 2); // add indentation and spacing
+        setJsonResponse(formattedJson);
+      })
+      .catch((error) => {
+        console.error("Error analyzing file: ", error);
+      });
+  };
+
   useEffect(() => {
     fetch("http://0.0.0.0:8000/app/v1/review_stats")
       .then((response) => response.json())
@@ -464,7 +483,7 @@ return (
                 <td style={{ border: "1px solid black", padding: "0.5rem" }}>{file.date}</td>
                 <td style={{ border: "1px solid black", padding: "0.5rem" }}>
                   <button
-                    onClick={() => handleAnalysisFile(file.id)}
+                    onClick={() => handleAnalysisDone(file.query_number)}
                     style={{
                       backgroundColor: "#f3ba2f",
                       color: "white",
@@ -474,7 +493,7 @@ return (
                       cursor: "pointer",
                     }}
                   >
-                    Analyze
+                    Download analysis
                   </button>
                 </td>
               </tr>
@@ -482,7 +501,12 @@ return (
           </tbody>
         </table>
 
-
+    <div className="App">
+      {/* render the JSON response in an iframe */}
+      <iframe src={`data:text/html;charset=utf-8,${encodeURIComponent(jsonResponse)}`} title="JSON Response" style={{ width: '100%', height: '500px', border: 'none' }}></iframe>
+      {/* rest of the component */}
+      ...
+    </div>
 
 </div>
         <form
