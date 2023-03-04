@@ -1,0 +1,28 @@
+[flake8]
+# H903 :Windows style line endings not allowed in code
+# E266 : too many leading '#' for block comment
+# D203 : One blank line required before class docstring
+# H306 : imports not in alphabetical order
+# E501: Indicates that a line of code exceeds the recommended maximum line length of 79 characters (or the maximum specified in the configuration file).
+# E722: Indicates that a bare except: statement has been used, which can catch unintended exceptions and lead to difficult-to-debug errors.
+# W503: Indicates that the line break occurred before a binary operator, which goes against the recommended style for line breaks.
+
+ignore = H903, E266, D203, H306, E501, E722, W503
+exclude = .git,
+max-complexity = 10
+max_line_length = 120
+[flake8]
+exclude = .git,__pycache__,docs/source/conf.py,build,dist
+max-line-length = 88
+max-complexity = 10
+statistics = True
+count = True
+show-source = True
+tee = True
+output-file = flake8.log
+max-function-args = 5
+max-function-locals = 7
+max-try-body-length = 2
+max-returns = 2
+max-arguments = 5
+max-module-lines = 1000
