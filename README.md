@@ -44,4 +44,4 @@ as this is a test the .env file is in the repo (not for prod environments)
 
 ### API
 Finally I let a picture of the API
-![](docs/doc.png)
+![](docs/api.png)
