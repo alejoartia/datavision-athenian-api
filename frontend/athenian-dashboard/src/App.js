@@ -501,7 +501,7 @@ return (
           </tbody>
         </table>
 
-    <div className="App">
+    <div className="App"  style={{ width: 700 }} >
       {/* render the JSON response in an iframe */}
       <iframe src={`data:text/html;charset=utf-8,${encodeURIComponent(jsonResponse)}`} title="JSON Response" style={{ width: '100%', height: '500px', border: 'none' }}></iframe>
       {/* rest of the component */}
