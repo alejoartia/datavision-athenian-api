@@ -9,12 +9,13 @@ This is a RESTful API server that enables users to upload CSV data, view summary
 
 ```
 docker-compose build
+docker-compose up
+
 ```
 
 ### Initialization
-
+In a different terminal
 ```
-docker-compose up
 docker-compose run app alembic revision --autogenerate -m "New Migration"
 docker-compose run app alembic upgrade head
 ```
@@ -40,3 +41,7 @@ as this is a test the .env file is in the repo (not for prod environments)
 - `PGADMIN_EMAIL` refers to the email address of a PostgreSQL admin user.
 - `PGADMIN_PASSWORD` refers to the password of a PostgreSQL admin user,.
 
+
+### API
+Finally I let a picture of the API
+![](docs/doc.png)
