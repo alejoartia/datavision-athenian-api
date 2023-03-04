@@ -35,6 +35,15 @@ async def home() -> dict[str, str] | tuple[dict[str, str], int]:
 
 @dashboard.post('/upload')
 async def upload_file(file: bytes = File(...)) -> tuple[dict[str, str], int] | Any:
+    """Handle CSV file uploads.
+
+    Parse the uploaded CSV file, create a new `FileCsv` object and associate it with each row in the CSV,
+    and return summary statistics for the uploaded data.
+
+    Returns:
+        A dictionary containing summary statistics for the uploaded data, or a tuple containing an error message
+        and an HTTP status code if an error occurred during processing.
+    """
     try:
         decoded_file: str = file.decode('utf-8')
         file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
@@ -65,11 +74,17 @@ async def upload_file(file: bytes = File(...)) -> tuple[dict[str, str], int] | A
 
 @dashboard.post('/analysis_file/{id}')
 async def get_data(id: int):
-    try:
-        """
-        Endpoint to retrieve data filtered by team, date, and id
-        """
+    """
+    Endpoint to retrieve dashboard data filtered by team, date, and id.
 
+    Args:
+        id: An integer representing the query number to filter by.
+
+    Returns:
+        A string indicating whether the query has been saved, or a dictionary containing an error message
+        and an HTTP status code if an error occurred during processing.
+    """
+    try:
         dashboard_data = db.session.query(Dashboard).join(FileCsv).filter(
             QueriesAnalyzed.query_number == id
         )
@@ -94,8 +109,14 @@ async def get_data(id: int):
 @dashboard.get('/review_stats')
 async def review_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str], int]:
     """
-    Endpoint to retrieve data filtered by team and date
+    Endpoint to retrieve review statistics for the most recent query.
 
+    Returns a list of dictionaries, where each dictionary contains statistics for a single team,
+    including the mean, median, and mode review and merge times.
+
+    If no statistics are available (e.g., if no data has been analyzed yet), an empty list is returned.
+
+    If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
         # Get the last query number from the database
@@ -157,7 +178,14 @@ async def review_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, s
 @dashboard.get('/file_list')
 async def get_user_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str], int]:
     """
-    Endpoint to retrieve user stats
+    Endpoint to retrieve a list of uploaded files with their creation timestamps.
+
+    Returns a list of dictionaries, where each dictionary contains the file ID and creation timestamp
+    for a single uploaded file.
+
+    If no files have been uploaded yet, an empty list is returned.
+
+    If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
         dashboard_data = db.session.query(FileCsv)
@@ -187,7 +215,14 @@ async def get_user_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str,
 @dashboard.get('/save_analysis')
 async def save_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str], int] | tuple[dict[str, str], int]:
     """
-    Endpoint to save review_stats into a JSON file
+    Endpoint to save review statistics into a JSON file and return the data.
+
+    Calls the 'review_stats()' endpoint to get the statistics for the most recent query,
+    saves the statistics to the database, and returns the statistics as a list of dictionaries.
+
+    If no statistics are available (e.g., if no data has been analyzed yet), an empty list is returned.
+
+    If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
         review_stats_data = await review_stats()  # Call review_stats() endpoint to get the data
@@ -233,7 +268,14 @@ async def save_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str
 @dashboard.get('/saved_analysis_list')
 async def saved_analysis_list() -> list[Any] | list[dict[str, str | Any]] | tuple[dict[str, str], int]:
     """
-    Endpoint to retrieve the list of saved analyses
+    Endpoint to retrieve a list of saved analyses with their query numbers and creation timestamps.
+
+    Returns a list of dictionaries, where each dictionary contains the query number and creation timestamp
+    for a single saved analysis.
+
+    If no analyses have been saved yet, an empty list is returned.
+
+    If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
         analysis_data = db.session.query(StatsId).filter(StatsId.query_number.isnot(None))
@@ -256,7 +298,14 @@ async def saved_analysis_list() -> list[Any] | list[dict[str, str | Any]] | tupl
 @dashboard.get('/analysis/{id}')
 async def saved_analysis_object(id: int) -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str], int]:
     """
-    Endpoint to retrieve a saved analysis by ID
+    Endpoint to retrieve a saved analysis by its ID.
+
+    Returns a list of dictionaries, where each dictionary contains the statistics for a single team
+    in the specified analysis.
+
+    If no data is available for the specified ID, an empty list is returned.
+
+    If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
         dashboard_data = db.session.query(TeamStats).filter(TeamStats.stats_id == id)
