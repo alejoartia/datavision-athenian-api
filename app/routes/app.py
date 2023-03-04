@@ -295,7 +295,7 @@ async def saved_analysis_list() -> list[Any] | list[dict[str, str | Any]] | tupl
         return {"error": str(e)}, 500
 
 
-@dashboard.get('/analysis/{id}')
+@dashboard.post('/analysis/{id}')
 async def saved_analysis_object(id: int) -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str], int]:
     """
     Endpoint to retrieve a saved analysis by its ID.
