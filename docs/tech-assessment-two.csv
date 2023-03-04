@@ -1,0 +1,92 @@
+review_time,team,date,merge_time
+100,Application,44940,1000
+100,Application,44941,1000
+815,Application,44942,1597
+2941,Architecture,44943,1008
+51414,Application,44944,2091
+55865,Application,44945,1225
+100,Application,44946,1000
+400,Application,44947,1000
+400,Application,44948,1000
+1067,Application,44949,1022
+117734,Application,44950,1426
+86208,Application,44951,1986
+103109,Application,44952,1534
+47102,Application,44953,2047
+400,Application,44954,1500
+400,Application,44955,1500
+87123,Application,44956,1672
+1341,Application,44957,2328
+400,Application,44958,2155
+56759,Application,44959,2028
+4534,Application,44960,1858
+400,Data Service,44961,1500
+400,Data Service,44962,1500
+1167,Platform,44963,2179
+1401,Data Service,44964,2122
+7610,Data Service,44965,4561
+83230,Data Service,44966,2595
+32898,Data Service,44967,2700
+200,Data Service,44968,1500
+200,Data Service,44969,1500
+83115,Data Service,44970,2096
+144499,Data Service,44971,2576
+200,Data Service,44940,1500
+200,Application,44941,1200
+939,Data Service,44942,2069
+200,Data Service,44943,2547
+200,Data Service,44944,3728
+8732,Platform,44945,2333
+2492,Platform,44946,1200
+100,Platform,44947,1200
+100,Platform,44948,1200
+100,Platform,44949,1959
+6316,Platform,44950,1644
+4256,Platform,44951,2382
+462,Platform,44952,1834
+1012,Platform,44953,3313
+100,Platform,44954,1200
+100,Platform,44955,3538
+5277,Architecture,44956,2655
+5843,Architecture,44957,2824
+4477,Architecture,44958,1788
+532,Architecture,44959,2537
+2399,Architecture,44960,2034
+3038,Architecture,44961,1888
+100,Architecture,44962,1200
+100,Architecture,44963,1200
+100,Architecture,44964,2630
+1960,Architecture,44965,1542
+1250,Architecture,44966,2295
+4434,Architecture,44967,1437
+33794,Architecture,44968,3225
+2299,Architecture,44969,1552
+2570,Architecture,44970,3063
+2162,Architecture,44971,1530
+2100,Architecture,44940,1200
+2100,Architecture,44941,1200
+2179,Architecture,44942,1332
+2100,Architecture,44943,1200
+2100,Architecture,44944,1200
+64121,Architecture,44945,1272
+2100,Architecture,44946,1200
+2100,Architecture,44947,1100
+2100,Architecture,44948,1100
+2304,Architecture,44949,2495
+4312,Architecture,44950,6798
+3158,Architecture,44951,21040
+2177,Architecture,44952,1344
+257969,Architecture,44953,1106
+2100,Architecture,44954,1100
+2100,Architecture,44955,1100
+2360,Architecture,44956,1170
+120557,Architecture,44957,1141
+2480,Architecture,44958,2869
+2100,Architecture,44959,1100
+2100,Architecture,44960,1100
+2100,Architecture,44961,1100
+2100,Architecture,44962,1100
+2100,Architecture,44963,1100
+2100,Architecture,44964,1164
+2100,Architecture,44965,1701
+2100,Architecture,44966,1100
