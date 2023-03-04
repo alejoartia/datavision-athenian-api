@@ -1,8 +1,6 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float, ARRAY
-
+from typing import List, Optional
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float, ARRAY, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Date
-
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -14,15 +12,15 @@ class Dashboard(Base):
     Represents a dashboard object in the database.
     """
     __tablename__ = "Dashboard"
-    id = Column(Integer, primary_key=True, index=True)
-    review_time = Column(Integer)
-    team = Column(String)
-    date = Column(Date)
-    merge_time = Column(Integer)
+    id: int = Column(Integer, primary_key=True, index=True)
+    review_time: int = Column(Integer)
+    team: str = Column(String)
+    date: Optional[Date] = Column(Date)
+    merge_time: int = Column(Integer)
 
-    file_id = Column(Integer, ForeignKey("FileCsv.id"))
+    file_id: int = Column(Integer, ForeignKey("file_csv.id"))
 
-    file = relationship("FileCsv")
+    file: "FileCsv" = relationship("FileCsv")
 
 
 class FileCsv(Base):
@@ -30,9 +28,9 @@ class FileCsv(Base):
     Represents a CSV file object in the database.
     """
     __tablename__ = "FileCsv"
-    id = Column(Integer, primary_key=True)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    id: int = Column(Integer, primary_key=True)
+    time_created: DateTime = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated: DateTime = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class QueriesAnalyzed(Base):
@@ -40,10 +38,10 @@ class QueriesAnalyzed(Base):
     Represents a queries analyzed object in the database.
     """
     __tablename__ = "QueriesAnalyzed"
-    id = Column(Integer, primary_key=True)
-    query_number = Column(Integer)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    id: int = Column(Integer, primary_key=True)
+    query_number: int = Column(Integer)
+    time_created: DateTime = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated: DateTime = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class TeamStats(Base):
@@ -51,19 +49,19 @@ class TeamStats(Base):
     Represents a team stats object in the database.
     """
     __tablename__ = "team_stats"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    mean_review_time = Column(Float)
-    median_review_time = Column(Float)
-    mode_review_time = Column(Float)
-    mean_merge_time = Column(Float)
-    median_merge_time = Column(Float)
-    mode_merge_time = Column(Float)
-    date_created = Column(DateTime(timezone=True), onupdate=func.now())
+    id: int = Column(Integer, primary_key=True, index=True)
+    name: str = Column(String)
+    mean_review_time: float = Column(Float)
+    median_review_time: float = Column(Float)
+    mode_review_time: float = Column(Float)
+    mean_merge_time: float = Column(Float)
+    median_merge_time: float = Column(Float)
+    mode_merge_time: float = Column(Float)
+    date_created: DateTime = Column(DateTime(timezone=True), onupdate=func.now())
 
-    stats_id = Column(Integer, ForeignKey("StatsId.id"))
+    stats_id: int = Column(Integer, ForeignKey("stats_id.id"))
 
-    stat = relationship("StatsId")
+    stat: "StatsId" = relationship("StatsId")
 
 
 class StatsId(Base):
@@ -71,7 +69,7 @@ class StatsId(Base):
     Represents a stats ID object in the database.
     """
     __tablename__ = "StatsId"
-    id = Column(Integer, primary_key=True)
-    query_number = Column(Integer)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    id: int = Column(Integer, primary_key=True)
+    query_number: int = Column(Integer)
+    time_created: DateTime = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated: DateTime = Column(DateTime(timezone=True), onupdate=func.now())
