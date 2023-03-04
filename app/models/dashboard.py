@@ -3,6 +3,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float, ARR
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy.orm import Mapped
 
 Base = declarative_base()
 
@@ -18,9 +19,9 @@ class Dashboard(Base):
     date: Optional[Date] = Column(Date)
     merge_time: int = Column(Integer)
 
-    file_id: int = Column(Integer, ForeignKey("file_csv.id"))
+    file_id = Column(Integer, ForeignKey("file_csv.id"))
 
-    file: "FileCsv" = relationship("FileCsv")
+    file = relationship("FileCsv")
 
 
 class FileCsv(Base):
@@ -59,9 +60,9 @@ class TeamStats(Base):
     mode_merge_time: float = Column(Float)
     date_created: DateTime = Column(DateTime(timezone=True), onupdate=func.now())
 
-    stats_id: int = Column(Integer, ForeignKey("stats_id.id"))
+    stats_id = Column(Integer, ForeignKey("stats_id.id"))
 
-    stat: "StatsId" = relationship("StatsId")
+    stat = relationship("StatsId")
 
 
 class StatsId(Base):
