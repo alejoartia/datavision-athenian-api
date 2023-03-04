@@ -19,6 +19,15 @@ docker-compose run app alembic revision --autogenerate -m "New Migration"
 docker-compose run app alembic upgrade head
 ```
 
+### Server
+
+The docker compose will automatically start the servers on the following ports:
+
+- `BACKEND-DOCS` http://localhost:8000/docs  : Here you will be able to see the api
+- `FRONTEND-DASHBOARD` http://localhost:3000 : Here you will be able to see the dashboard
+- `PGADMIN-DATABASE` http://localhost:5050/  : Here you will be able to access to pg admin for the database 
+
+
 ### Environment
 
 The server requires:
@@ -30,6 +39,4 @@ as this is a test the .env file is in the repo (not for prod environments)
 - `DB_NAME` refers to the name of a databas.
 - `PGADMIN_EMAIL` refers to the email address of a PostgreSQL admin user.
 - `PGADMIN_PASSWORD` refers to the password of a PostgreSQL admin user,.
-
-
 
