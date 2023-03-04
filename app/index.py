@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from app.routes.app import dashboard
 from starlette.middleware.cors import CORSMiddleware
 from fastapi_sqlalchemy import DBSessionMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.openapi.utils import get_openapi
 import os
-
 
 # Create the FastAPI application
 app = FastAPI()
@@ -29,3 +30,25 @@ app.add_middleware(
     allow_methods=ALLOWED_METHODS,
     allow_headers=ALLOWED_HEADERS,
 )
+
+
+# Define a function to generate the OpenAPI specification
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Data-Vision Athenian API by Alejandro Cordoba",
+        version="1.0.0",
+        description="This is a RESTful API server that enables users to upload CSV data, view summary statictics, "
+                    "create visualization. Is designed to be scalable and high-performing. It provides a reange of "
+                    "visualisation options as charts, bar charts, and scatter plots. Topics Resources",
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+# Define a route to return the OpenAPI specification
+@app.get("/openapi.json")
+async def get_openapi_spec():
+    return JSONResponse(content=custom_openapi())
