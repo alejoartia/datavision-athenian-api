@@ -10,6 +10,8 @@ from asyncio.log import logger
 from fastapi import APIRouter, File
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 
+from app.analysis.dashboard_service import DashboardService
+from app.analysis.dashboard_repository import DashboardRepository
 from app.models.dashboard import (Dashboard, FileCsv, QueriesAnalyzed,
                                   TeamStats, StatsId)
 
@@ -17,6 +19,8 @@ load_dotenv(".env")
 
 # Create an API router for the user endpoint
 dashboard = APIRouter()
+dashboard_repository = DashboardRepository()
+dashboard_service = DashboardService(dashboard_repository)
 
 
 @dashboard.get('/')
@@ -45,26 +49,7 @@ async def upload_file(file: bytes = File(...)) -> tuple[dict[str, str], int] | A
         and an HTTP status code if an error occurred during processing.
     """
     try:
-        decoded_file: str = file.decode('utf-8')
-        file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
-
-        file_csv = FileCsv()
-        db.session.add(file_csv)
-        db.session.commit()
-
-        for row in file_reader.itertuples():
-            dashboard = Dashboard(
-                review_time=row.review_time,
-                team=row.team,
-                date=row.date,
-                merge_time=row.merge_time,
-                file_id=file_csv.id
-            )
-            db.session.add(dashboard)
-        db.session.commit()
-
-        summary_stats: pd.DataFrame = file_reader.describe()
-        return summary_stats.to_dict()
+        return dashboard_service.upload_file(file=file)
     except Exception as e:
         # Log the exception for debugging purposes
         logger.exception("An exception occurred while handling the file upload request")
@@ -85,20 +70,7 @@ async def get_data(id: int):
         and an HTTP status code if an error occurred during processing.
     """
     try:
-        dashboard_data = db.session.query(Dashboard).join(FileCsv).filter(
-            QueriesAnalyzed.query_number == id
-        )
-        # Check if the query number exists in the database
-        if dashboard_data is None:
-            return {"error": "The query number does not exist"}, 404
-
-        queries_analyzed = QueriesAnalyzed(
-            query_number=id,
-        )
-        db.session.add(queries_analyzed)
-        db.session.commit()
-
-        return f'The query has been saved'
+        return dashboard_service.get_data(id)
     except Exception as e:
         # Log the exception for debugging purposes
         logger.exception("An exception occurred while handling the analysis file request")
