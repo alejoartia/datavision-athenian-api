@@ -9,7 +9,7 @@ class DashboardService:
     def __init__(self, dashboard_repository: DashboardRepository):
         self.dashboard_repository = dashboard_repository
 
-    def upload_file(self, file: bytes) -> dict[str, str]:
+    async def upload_file(self, file: bytes) -> dict[str, str]:
         decoded_file: str = file.decode('utf-8')
         file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
         file_csv = FileCsv()
@@ -31,7 +31,7 @@ class DashboardService:
         summary_stats: pd.DataFrame = file_reader.describe()
         return summary_stats.to_dict()
 
-    def get_data(self, id: int) -> str:
+    async def get_data(self, id: int) -> str:
         dashboard_data = self.dashboard_repository.get_dashboard_by_query_number(id)
         if dashboard_data is None:
             return "The query number does not exist"
@@ -42,7 +42,7 @@ class DashboardService:
         self.dashboard_repository.create_queries_analyzed(queries_analyzed)
         return 'The query has been saved'
 
-    def get_review_stats(self) -> list[dict[str, Any]]:
+    async def get_review_stats(self) -> list[dict[str, Any]]:
         last_query_number: Optional[int] = self.dashboard_repository.get_last_query_number()
 
         if not last_query_number:
@@ -80,7 +80,7 @@ class DashboardService:
 
         return review_stats
 
-    def get_file_list(self) -> list[dict[str, Any]]:
+    async def get_file_list(self) -> list[dict[str, Any]]:
         dashboard_list = self.dashboard_repository.get_files()
 
         if not dashboard_list:
@@ -96,7 +96,7 @@ class DashboardService:
                            df.to_dict('records')]
         return user_stats_list
 
-    def save_stats(self) -> list[dict[str, Any]]:
+    async def save_stats(self) -> list[dict[str, Any]]:
         review_stats_data = self.get_review_stats()
 
         if not review_stats_data:
@@ -129,7 +129,7 @@ class DashboardService:
 
         return review_stats_data
 
-    def get_analysis_data(self) -> List[Dict[str, str]]:
+    async def get_analysis_data(self) -> List[Dict[str, str]]:
         analysis_data = self.dashboard_repository.get_analysis_data()
 
         if analysis_data is None:
@@ -142,7 +142,7 @@ class DashboardService:
         ]
         return stats
 
-    def get_team_stats_by_id(self, id: int) -> list[dict[str, Any]]:
+    async def get_team_stats_by_id(self, id: int) -> list[dict[str, Any]]:
         team_stats = self.dashboard_repository.get_team_stats_by_id(id)
 
         if not team_stats:

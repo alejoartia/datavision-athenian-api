@@ -38,7 +38,7 @@ async def upload_file(file: bytes = File(...)) -> tuple[dict[str, str], int] | A
         and an HTTP status code if an error occurred during processing.
     """
     try:
-        return dashboard_service.upload_file(file=file)
+        return await dashboard_service.upload_file(file=file)
     except Exception as e:
         # Log the exception for debugging purposes
         logger.exception("An exception occurred while handling the file upload request")
@@ -50,14 +50,12 @@ async def upload_file(file: bytes = File(...)) -> tuple[dict[str, str], int] | A
 async def get_data(id: int):
     """
     Endpoint to retrieve dashboard data filtered by team, date, and id.
-    Args:
-        id: An integer representing the query number to filter by.
-    Returns:
-        A string indicating whether the query has been saved, or a dictionary containing an error message
-        and an HTTP status code if an error occurred during processing.
+    Args: id: An integer representing the query number to filter by.
+    Returns: A string indicating whether the query has been saved, or a dictionary containing an error message
+    and an HTTP status code if an error occurred during processing.
     """
     try:
-        return dashboard_service.get_data(id=id)
+        return await dashboard_service.get_data(id=id)
     except Exception as e:
         # Log the exception for debugging purposes
         logger.exception("An exception occurred while handling the analysis file request")
@@ -75,7 +73,7 @@ async def review_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, s
     If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
-        return dashboard_service.get_review_stats()
+        return await dashboard_service.get_review_stats()
 
     except Exception as e:
         # If an error occurs, return a 500 status code and an error message
@@ -92,7 +90,7 @@ async def get_user_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str,
     If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
-        return dashboard_service.get_file_list()
+        return await dashboard_service.get_file_list()
 
     except Exception as e:
         # If an error occurs, return a 500 status code and an error message
@@ -109,7 +107,7 @@ async def save_stats() -> list[Any] | list[dict[str, Any]] | tuple[dict[str, str
     If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
-        return dashboard_service.save_stats()
+        return await dashboard_service.save_stats()
 
     except Exception as e:
         # If an error occurs, return a 500 status code and an error message
@@ -126,7 +124,7 @@ async def saved_analysis_list() -> list[Any] | list[dict[str, str | Any]] | tupl
     If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
-        stats = dashboard_service.get_analysis_data()
+        stats = await dashboard_service.get_analysis_data()
         return stats
 
     except Exception as e:
@@ -144,7 +142,7 @@ async def saved_analysis_object(id: int) -> list[Any] | list[dict[str, Any]] | t
     If an error occurs during processing, an error message and an HTTP status code of 500 is returned.
     """
     try:
-        team_stats = dashboard_service.get_team_stats_by_id(id)
+        team_stats = await dashboard_service.get_team_stats_by_id(id)
         return team_stats
 
     except Exception as e:
