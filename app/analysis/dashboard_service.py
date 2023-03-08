@@ -97,7 +97,7 @@ class DashboardService:
         return user_stats_list
 
     async def save_stats(self) -> list[dict[str, Any]]:
-        review_stats_data = self.get_review_stats()
+        review_stats_data = await self.get_review_stats()
 
         if not review_stats_data:
             return []

@@ -20,7 +20,7 @@ class DashboardRepository:
     def get_dashboard_by_query_number(id: int) -> Dashboard:
         return db.session.query(Dashboard).join(FileCsv).filter(
             QueriesAnalyzed.query_number == id
-        ).first()
+        )
 
     @staticmethod
     def create_queries_analyzed(queries_analyzed: QueriesAnalyzed):
