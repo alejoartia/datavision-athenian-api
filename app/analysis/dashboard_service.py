@@ -1,6 +1,6 @@
 import io
 import pandas as pd
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 from app.analysis.dashboard_repository import DashboardRepository
 from app.models.dashboard import Dashboard, FileCsv, QueriesAnalyzed, StatsId, TeamStats
 
@@ -12,20 +12,19 @@ class DashboardService:
     def upload_file(self, file: bytes) -> dict[str, str]:
         decoded_file: str = file.decode('utf-8')
         file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
-
         file_csv = FileCsv()
         self.dashboard_repository.create_file_csv(file_csv)
 
-        dashboards = []
-        for row in file_reader.itertuples():
-            dashboard = Dashboard(
+        dashboards = [
+            Dashboard(
                 review_time=row.review_time,
                 team=row.team,
                 date=row.date,
                 merge_time=row.merge_time,
                 file_id=file_csv.id
             )
-            dashboards.append(dashboard)
+            for row in file_reader.itertuples()
+        ]
 
         self.dashboard_repository.create_dashboards(dashboards)
 
@@ -44,63 +43,58 @@ class DashboardService:
         return 'The query has been saved'
 
     def get_review_stats(self) -> list[dict[str, Any]]:
-        last_query_number = self.dashboard_repository.get_last_query_number()
+        last_query_number: Optional[int] = self.dashboard_repository.get_last_query_number()
 
-        if last_query_number is None:
+        if not last_query_number:
             return []
 
-        dashboard_data: List[Dashboard] = self.dashboard_repository.get_dashboard_data_by_query_number(
+        dashboard_data: Optional[List[Dashboard]] = self.dashboard_repository.get_dashboard_data_by_query_number(
             last_query_number)
 
-        if dashboard_data is None:
+        if not dashboard_data:
             return []
 
-        data = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
-        df = pd.DataFrame(data, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
+        dashboard_info = [(d.id, d.review_time, d.team, d.date, d.merge_time) for d in dashboard_data]
+        df = pd.DataFrame(dashboard_info, columns=['id', 'review_time', 'team', 'date', 'merge_time'])
 
         if df.empty:
             return []
 
-        grouped_data = df.groupby("team")
-        mean_review_time = grouped_data["review_time"].mean()
-        median_review_time = grouped_data["review_time"].median()
-        mode_review_time = grouped_data["review_time"].agg(pd.Series.mode).astype(float)
+        grouped_dashboard_data = df.groupby('team')
+        mean_review_time = grouped_dashboard_data['review_time'].mean()
+        median_review_time = grouped_dashboard_data['review_time'].median()
+        mode_review_time = grouped_dashboard_data['review_time'].agg(pd.Series.mode).astype(float)
+        mean_merge_time = grouped_dashboard_data['merge_time'].mean()
+        median_merge_time = grouped_dashboard_data['merge_time'].median()
+        mode_merge_time = grouped_dashboard_data['merge_time'].agg(pd.Series.mode).astype(float)
 
-        mean_merge_time = grouped_data["merge_time"].mean()
-        median_merge_time = grouped_data["merge_time"].median()
-        mode_merge_time = grouped_data["merge_time"].agg(pd.Series.mode).astype(float)
-
-        review_stats = []
-        for team in grouped_data.groups:
-            team_dict = {
-                "name": team,
-                "mean_review_time": mean_review_time[team],
-                "median_review_time": median_review_time[team],
-                "mode_review_time": mode_review_time[team].tolist(),
-                "mean_merge_time": mean_merge_time[team],
-                "median_merge_time": median_merge_time[team],
-                "mode_merge_time": mode_merge_time[team].tolist(),
-            }
-            review_stats.append(team_dict)
+        review_stats = [{
+            'name': team,
+            'mean_review_time': mean_review_time[team],
+            'median_review_time': median_review_time[team],
+            'mode_review_time': mode_review_time[team].tolist(),
+            'mean_merge_time': mean_merge_time[team],
+            'median_merge_time': median_merge_time[team],
+            'mode_merge_time': mode_merge_time[team].tolist()
+        } for team in grouped_dashboard_data.groups]
 
         return review_stats
 
     def get_file_list(self) -> list[dict[str, Any]]:
-        dashboard_data = self.dashboard_repository.get_files()
+        dashboard_list = self.dashboard_repository.get_files()
 
-        if dashboard_data is None:
+        if not dashboard_list:
             return []
 
-        data = [(d.id, d.time_created) for d in dashboard_data]
-        df = pd.DataFrame(data, columns=['_id', 'time_created'])
+        id_and_time_list = [(d.id, d.time_created) for d in dashboard_list]
+        df = pd.DataFrame(id_and_time_list, columns=['_id', 'time_created'])
 
         if df.empty:
             return []
 
-        data_dict = df.to_dict('records')
-        user_stats = [{"id": d['_id'], "date": d['time_created'].strftime('%Y-%m-%d %H:%M')} for d in data_dict]
-
-        return user_stats
+        user_stats_list = [{"id": d['_id'], "date": f"{d['time_created']: %Y-%m-%d %H:%M}"} for d in
+                           df.to_dict('records')]
+        return user_stats_list
 
     def save_stats(self) -> list[dict[str, Any]]:
         review_stats_data = self.get_review_stats()
@@ -148,41 +142,23 @@ class DashboardService:
         ]
         return stats
 
-    def get_team_stats_by_id(self, id: int) -> List[Dict[str, Any]]:
+    def get_team_stats_by_id(self, id: int) -> list[dict[str, Any]]:
         team_stats = self.dashboard_repository.get_team_stats_by_id(id)
 
-        if team_stats is None:
+        if not team_stats:
             # If there is no data for the specified ID, return an empty list
             return []
 
-        data = [(d.id,
-                 d.name,
-                 d.mean_review_time,
-                 d.median_review_time,
-                 d.mode_review_time,
-                 d.mean_merge_time,
-                 d.median_merge_time,
-                 d.mode_merge_time) for d in team_stats]
+        data = [(d.id, d.name, d.mean_review_time, d.median_review_time, d.mode_review_time,
+                 d.mean_merge_time, d.median_merge_time, d.mode_merge_time) for d in team_stats]
 
-        df = pd.DataFrame(data, columns=['id',
-                                         'name',
-                                         'mean_review_time',
-                                         'median_review_time',
-                                         'mode_review_time',
-                                         'mean_merge_time',
-                                         'median_merge_time',
-                                         'mode_merge_time'])
-
-        df_dict = df.to_dict(orient='records')
-
-        # Create a new list of dictionaries with the desired keys
-        stats_list = [{"id": d['id'],
-                       "name": d['name'],
-                       "mean_review_time": d['mean_review_time'],
-                       "median_review_time": d['median_review_time'],
-                       "mode_review_time": d['mode_review_time'],
-                       "mean_merge_time": d['mean_merge_time'],
-                       "median_merge_time": d['median_merge_time'],
-                       "mode_merge_time": d['mode_merge_time']} for d in df_dict]
+        stats_list = [{"id": d[0],
+                       "name": d[1],
+                       "mean_review_time": d[2],
+                       "median_review_time": d[3],
+                       "mode_review_time": d[4],
+                       "mean_merge_time": d[5],
+                       "median_merge_time": d[6],
+                       "mode_merge_time": d[7]} for d in data]
 
         return stats_list
