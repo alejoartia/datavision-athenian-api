@@ -1,19 +1,10 @@
-import io
-import json
 from typing import List, Dict, Any, Tuple
-
-import pandas as pd
 from dotenv import load_dotenv
-from sqlalchemy import desc, func
 from asyncio.log import logger
-
 from fastapi import APIRouter, File
-from fastapi_sqlalchemy import DBSessionMiddleware, db
-
 from app.analysis.dashboard_service import DashboardService
 from app.analysis.dashboard_repository import DashboardRepository
-from app.models.dashboard import (Dashboard, FileCsv, QueriesAnalyzed,
-                                  TeamStats, StatsId)
+
 
 load_dotenv(".env")
 
