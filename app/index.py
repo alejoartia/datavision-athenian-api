@@ -5,6 +5,7 @@ from fastapi_sqlalchemy import DBSessionMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.openapi.utils import get_openapi
 import os
+from app.analysis.dashboard_async_db import connect, disconnect
 
 # Create the FastAPI application
 app = FastAPI()
@@ -52,3 +53,14 @@ def custom_openapi():
 @app.get("/openapi.json")
 async def get_openapi_spec():
     return JSONResponse(content=custom_openapi())
+
+
+# for async
+@app.on_event("startup")
+async def startup():
+    await connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await disconnect()

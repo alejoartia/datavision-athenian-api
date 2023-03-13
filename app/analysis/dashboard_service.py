@@ -13,7 +13,7 @@ class DashboardService:
         decoded_file: str = file.decode('utf-8')
         file_reader: pd.DataFrame = pd.read_csv(io.StringIO(decoded_file))
         file_csv = FileCsv()
-        self.dashboard_repository.create_file_csv(file_csv)
+        await self.dashboard_repository.create_file_csv(file_csv)
 
         dashboards = [
             Dashboard(
@@ -26,29 +26,29 @@ class DashboardService:
             for row in file_reader.itertuples()
         ]
 
-        self.dashboard_repository.create_dashboards(dashboards)
+        await self.dashboard_repository.create_dashboards(dashboards)
 
         summary_stats: pd.DataFrame = file_reader.describe()
         return summary_stats.to_dict()
 
     async def get_data(self, id: int) -> str:
-        dashboard_data = self.dashboard_repository.get_dashboard_by_query_number(id)
+        dashboard_data = await self.dashboard_repository.get_dashboard_by_query_number(id)
         if dashboard_data is None:
             return "The query number does not exist"
 
         queries_analyzed = QueriesAnalyzed(
             query_number=id,
         )
-        self.dashboard_repository.create_queries_analyzed(queries_analyzed)
+        await self.dashboard_repository.create_queries_analyzed(queries_analyzed)
         return 'The query has been saved'
 
     async def get_review_stats(self) -> list[dict[str, Any]]:
-        last_query_number: Optional[int] = self.dashboard_repository.get_last_query_number()
+        last_query_number: Optional[int] = await self.dashboard_repository.get_last_query_number()
 
         if not last_query_number:
             return []
 
-        dashboard_data: Optional[List[Dashboard]] = self.dashboard_repository.get_dashboard_data_by_query_number(
+        dashboard_data: Optional[List[Dashboard]] = await self.dashboard_repository.get_dashboard_data_by_query_number(
             last_query_number)
 
         if not dashboard_data:
@@ -81,7 +81,7 @@ class DashboardService:
         return review_stats
 
     async def get_file_list(self) -> list[dict[str, Any]]:
-        dashboard_list = self.dashboard_repository.get_files()
+        dashboard_list = await self.dashboard_repository.get_files()
 
         if not dashboard_list:
             return []
@@ -104,7 +104,7 @@ class DashboardService:
 
         df = pd.DataFrame(review_stats_data)
 
-        max_query_number = self.dashboard_repository.get_max_query_number()
+        max_query_number = await self.dashboard_repository.get_max_query_number()
 
         if max_query_number is None:
             max_query_number = 1
@@ -112,7 +112,7 @@ class DashboardService:
             max_query_number += 1
 
         stats_id = StatsId(query_number=max_query_number)
-        self.dashboard_repository.add_stats_id(stats_id)
+        await self.dashboard_repository.add_stats_id(stats_id)
 
         for row in df.itertuples():
             teamstats = TeamStats(
@@ -125,12 +125,12 @@ class DashboardService:
                 mode_merge_time=row.mode_merge_time,
                 stats_id=stats_id.query_number
             )
-            self.dashboard_repository.add_team_stats(teamstats)
+            await self.dashboard_repository.add_team_stats(teamstats)
 
         return review_stats_data
 
     async def get_analysis_data(self) -> List[Dict[str, str]]:
-        analysis_data = self.dashboard_repository.get_analysis_data()
+        analysis_data = await self.dashboard_repository.get_analysis_data()
 
         if analysis_data is None:
             # If there is no analysis data, return an empty list
@@ -143,7 +143,7 @@ class DashboardService:
         return stats
 
     async def get_team_stats_by_id(self, id: int) -> list[dict[str, Any]]:
-        team_stats = self.dashboard_repository.get_team_stats_by_id(id)
+        team_stats = await self.dashboard_repository.get_team_stats_by_id(id)
 
         if not team_stats:
             # If there is no data for the specified ID, return an empty list
