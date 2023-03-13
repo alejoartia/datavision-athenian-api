@@ -4,7 +4,7 @@ from asyncio.log import logger
 from fastapi import APIRouter, File
 from app.analysis.dashboard_service import DashboardService
 from app.analysis.dashboard_repository import DashboardRepository
-
+from app.analysis.dashboard_async_db import database
 
 load_dotenv(".env")
 
@@ -12,6 +12,7 @@ load_dotenv(".env")
 dashboard = APIRouter()
 dashboard_repository = DashboardRepository()
 dashboard_service = DashboardService(dashboard_repository)
+
 
 
 @dashboard.get('/')
